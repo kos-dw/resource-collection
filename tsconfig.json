@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ESNext",
+
+    /* Modules */
+    "module": "NodeNext",
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["src/*"]
+    },
+    // "rootDirs": [],
+    "typeRoots": ["./src/types"],
+
+    /* Emit */
+    "outDir": "./dist",
+
+    /* Interop Constraints */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Type Checking */
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
+}

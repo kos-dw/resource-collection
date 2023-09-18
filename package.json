@@ -1,0 +1,24 @@
+{
+  "name": "resource-collection",
+  "version": "0.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "ts-node src/app.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "typesync || :",
+    "release:patch": "standard-version --release-as patch",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^21.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.1",
+    "tsconfig-paths": "^4.2.0"
+  }
+}
