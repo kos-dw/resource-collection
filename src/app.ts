@@ -127,6 +127,7 @@ class ResourceCollection {
     const { browser, page } = await this.init();
 
     try {
+      // リソースを収集するページのurlを取得
       const articles = await this.Rurls.get({
         urls: this.props.resourceUrls,
         page: page,

@@ -23,7 +23,11 @@ export class ResourceUrls {
     let integratedUrl: string[] | null = [];
 
     for (let url of urls) {
-      await router.transion(url, page);
+      try {
+        await router.transion(url, page);
+      } catch (e: any) {
+        throw new Error(e.message);
+      }
       const articles = await page.evaluate((selector) => {
         const anchors = [
           ...document.querySelectorAll(selector),
