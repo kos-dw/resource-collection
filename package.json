@@ -1,6 +1,6 @@
 {
   "name": "resource-collection",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.6.1",
+    "standard-version": "^9.5.0",
     "tsconfig-paths": "^4.2.0"
   }
 }
