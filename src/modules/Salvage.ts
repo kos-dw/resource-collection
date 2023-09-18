@@ -75,7 +75,6 @@ export class Salvage {
 
         // メイン画像をサムネイル用として保存
         if (thumbnail !== false && imageUrl === imageUrls.slice(-1)[0]) {
-          console.log(imageUrl, imageUrls.slice(-1)[0]);
           const prefix = typeof thumbnail === "string" ? thumbnail : "_thumb_";
           fs.writeFileSync(
             path.join(saveDir, `${prefix}${path.basename(imageUrl)}`),
