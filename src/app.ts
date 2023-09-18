@@ -6,18 +6,9 @@ import { ENV } from "~/constants/environment";
 import { GotoPageWithWait, Logger, ResourceUrls, Salvage } from "~/modules/";
 import { Props } from "~/types";
 import { escapeFileName } from "~/utils";
-
-// 初期設定
-// ############################################################
-/** リソースを収集するページのディレクトリ名 */
-const SEARCH_URLS = ["about"];
-/** リソースを収集するページのセレクタ */
-const SELECTOR = {
-  items: "main img",
-  title: "h1",
-  anchor: "header a",
-};
-// ############################################################
+// 収集ページの情報やセレクタなどの情報が記載されたファイル
+// import recipe_exeample from "~/recipe.config.example";
+import { recipe } from "~/recipe.config";
 
 const dipendecies: [ENV, GotoPageWithWait, ResourceUrls, Salvage, Logger] = [
   new ENV(),
@@ -46,10 +37,10 @@ class ResourceCollection {
     private readonly logger: Logger
   ) {
     this.props = {
-      resourceUrls: SEARCH_URLS.map(
+      resourceUrls: recipe.search_url.map(
         (leaf) => new URL(leaf, this.ENV.BASE_URL).href
       ),
-      selector: SELECTOR,
+      selector: recipe.selector,
       allowedFilePattern: /.*\.(jpg|jpeg|png|svg|webp)$/i,
       thumbnail: true,
     };
