@@ -7,8 +7,6 @@ import path from "path";
 export class ENV {
   /** アプリケーションのルートディレクトリ */
   APP_ROOT = path.resolve("~/../");
-  /** スクレイピング対象ページのURL */
-  BASE_URL = process.env.BASE_URL || "https://example.com";
   /** ログファイルの保存先 */
   ACCESS_LOG = path.join(this.APP_ROOT, ".log/access.log");
   /** リソースの保存先 */
@@ -17,7 +15,18 @@ export class ENV {
   PUPPETEER = {
     /** 初期化時のconfig */
     CONFIG: {
-      headless: "new",
+      headless: (() => {
+        switch (process.env.PUPPETEER_ISHEADLESS) {
+          case "true":
+            return true;
+          case "false":
+            return false;
+          case "new":
+            return "new";
+          default:
+            return undefined;
+        }
+      })(),
       slowMo: 50,
     } as const,
     /** ページ遷移時の待機時間 */

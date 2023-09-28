@@ -38,7 +38,7 @@ class ResourceCollection {
   ) {
     this.props = {
       resourceUrls: recipe.search_url.map(
-        (leaf) => new URL(leaf, this.ENV.BASE_URL).href
+        (leaf) => new URL(leaf, recipe.base_url).href
       ),
       selector: recipe.selector,
       allowedFilePattern: /.*\.(jpg|jpeg|png|svg|webp)$/i,
