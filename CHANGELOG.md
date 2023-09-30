@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/kos-dw/resource-collection/compare/v1.0.4...v2.0.0) (2023-09-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* 読み込み方法の変更、ENVクラスに統合
+
+* docs: 📚 README.mdの修正
+
+* chore: 🎩 gitignoreの修正
+
+### Features
+
+* (*)レシピの指定方法の変更 ([#4](https://github.com/kos-dw/resource-collection/issues/4)) ([2e77ad1](https://github.com/kos-dw/resource-collection/commit/2e77ad133ac6948870c4ed9050928bced0109ccc))
+
 ### [1.0.4](https://github.com/kos-dw/resource-collection/compare/v1.0.3...v1.0.4) (2023-09-30)
 
 ### Bug Fixes
