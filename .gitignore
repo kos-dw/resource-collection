@@ -5,8 +5,3 @@
 node_modules
 recipe.config.ts
 dist
-
-# パッケージ管理ツールのロックファイル
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
