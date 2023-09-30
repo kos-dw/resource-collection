@@ -102,6 +102,12 @@ class ResourceCollection {
     const page = await browser.newPage();
     page.setUserAgent(this.ENV.PUPPETEER.USER_AGENT);
 
+    // アクセスログのディレクトリが存在しない場合は作成してログファイルを作成
+    const logDir = path.dirname(this.ENV.ACCESS_LOG);
+    if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+    if (!fs.existsSync(this.ENV.ACCESS_LOG))
+      fs.writeFileSync(this.ENV.ACCESS_LOG, "", "utf-8");
+
     // 訪問済みのページを読み込む
     this.visitedPages = fs
       .readFileSync(this.ENV.ACCESS_LOG, "utf-8")

@@ -7,11 +7,10 @@
   "scripts": {
     "start": "ts-node src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "typesync || :",
     "release:patch": "standard-version --release-as patch",
     "release:minor": "standard-version --release-as minor",
     "release:major": "standard-version --release-as major",
-    "create-typeonly": "tsc src/recipe.config.ts --outFile src/types/recipe.config.d.ts -d --emitDeclarationOnly"
+    "preinstall": "typesync || :"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +21,9 @@
   "devDependencies": {
     "@types/node": "^20.6.1",
     "standard-version": "^9.5.0",
-    "tsconfig-paths": "^4.2.0"
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.2.2",
+    "typesync": "^0.11.1"
   }
 }
