@@ -2,13 +2,11 @@ import fs from "fs";
 import path from "path";
 import type { Browser, Page } from "puppeteer";
 import puppeteer from "puppeteer";
-import { ENV } from "~/constants/environment";
-import { GotoPageWithWait, Logger, ResourceUrls, Salvage } from "~/modules/";
+
+import ENV from "~/constants/environment";
+import { GotoPageWithWait, Logger, ResourceUrls, Salvage } from "~/modules";
 import { Props } from "~/types";
 import { escapeFileName } from "~/utils";
-// 収集ページの情報やセレクタなどの情報が記載されたファイル
-// import recipe_exeample from "~/recipe.config.example";
-import { recipe } from "~/recipe.config";
 
 const dipendecies: [ENV, GotoPageWithWait, ResourceUrls, Salvage, Logger] = [
   new ENV(),
@@ -37,10 +35,10 @@ class ResourceCollection {
     private readonly logger: Logger
   ) {
     this.props = {
-      resourceUrls: recipe.search_url.map(
-        (leaf) => new URL(leaf, recipe.base_url).href
+      resourceUrls: ENV.RECIPE.search_url.map(
+        (leaf) => new URL(leaf, ENV.RECIPE.base_url).href
       ),
-      selector: recipe.selector,
+      selector: ENV.RECIPE.selector,
       allowedFilePattern: /.*\.(jpg|jpeg|png|svg|webp)$/i,
       thumbnail: true,
     };
