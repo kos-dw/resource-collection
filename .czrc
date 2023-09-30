@@ -1,0 +1,79 @@
+{
+  "path": "node_modules/cz-emoji",
+  "config": {
+    "cz-emoji": {
+      "subjectMaxLength": 72,
+      "disabled-skipQuestions": ["scope"],
+      "types": [
+        {
+          "name": "feat",
+          "code": "feat: ✨️",
+          "emoji": "✨️",
+          "description": "- 新機能"
+        },
+        {
+          "name": "fix",
+          "code": "fix: 🐛",
+          "emoji": "🐛",
+          "description": "- バグの修正"
+        },
+        {
+          "name": "docs",
+          "code": "docs: 📚",
+          "emoji": "📚",
+          "description": "- ドキュメントのみの変更"
+        },
+        {
+          "name": "style",
+          "code": "style: 💇‍♀️",
+          "emoji": "💇‍♀️",
+          "description": "- コードの動作に影響しない、見た目だけの変更(スペース、フォーマット、欠落の修正、セミコロンなど)"
+        },
+        {
+          "name": "refactor",
+          "code": "refactor: 🔄",
+          "emoji": "🔄",
+          "description": "- バグの修正や機能の追加ではないコードの変更"
+        },
+        {
+          "name": "perf",
+          "code": "perf: 🚀",
+          "emoji": "🚀",
+          "description": "- パフォーマンスを向上させるコードの変更"
+        },
+        {
+          "name": "test",
+          "code": "test: ✅",
+          "emoji": "✅",
+          "description": "- 不足しているテストの追加や既存のテストの修正"
+        },
+        {
+          "name": "chore",
+          "code": "chore: 🎩",
+          "emoji": "🎩",
+          "description": "- ビルドプロセスやドキュメント生成などの補助ツールやライブラリの変更"
+        },
+        {
+          "name": "wip",
+          "code": "wip: 🚧",
+          "emoji": "🚧",
+          "description": "- 作業中"
+        },
+        {
+          "name": "revert",
+          "code": "revert ⏪️",
+          "emoji": "⏪️",
+          "description": "- 以前のコミットに復帰"
+        }
+      ],
+      "questions": {
+        "type": "コミットする変更タイプを選択:",
+        "scope": "変更内容のスコープ (例:コンポーネントやファイル名):",
+        "subject": "変更内容を要約した本質的説明:",
+        "body": "変更内容の詳細:",
+        "breaking": "破壊的変更の説明 - Skip with Enter -:",
+        "issues": "このコミットで閉じるissues（例: #123）- Skip with Enter -:"
+      }
+    }
+  }
+}
