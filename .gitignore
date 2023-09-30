@@ -4,3 +4,8 @@
 .DS_Store
 node_modules
 recipe.config.ts
+
+# パッケージ管理ツールのロックファイル
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
