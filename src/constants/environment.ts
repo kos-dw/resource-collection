@@ -1,10 +1,12 @@
+import fs from "fs";
 import path from "path";
+import { Recipe } from "~/types";
 
 /**
  * 環境変数を管理する
  * @class ENV
  */
-export class ENV {
+export default class ENV {
   /** アプリケーションのルートディレクトリ */
   APP_ROOT = path.resolve("~/../");
   /** ログファイルの保存先 */
@@ -34,4 +36,14 @@ export class ENV {
     /** ユーザーエージェント */
     USER_AGENT: process.env.USER_AGENT || "",
   };
+  /** レシピ */
+  get RECIPE() {
+    const recipePath = path.join(this.APP_ROOT, "recipe.config.js");
+    if (!fs.existsSync(recipePath)) {
+      console.error(`[error]: recipe.config.js is not found.`);
+      process.exit(1);
+    }
+    const recipe: Recipe = require(recipePath);
+    return recipe;
+  }
 }
