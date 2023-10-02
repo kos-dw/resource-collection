@@ -43,9 +43,11 @@ touch recipe.config.js
 // recipe.config.js
 module.exports = {
   base_url: "https://example.com/",
-  search_url: ["about", "recruit"],
-  selector: {
-    anchor: "header a",
+  survey: {
+    subdir: ["about", "recruit"],
+    anchor: "header nav a",
+  },
+  target: {
     title: "h1",
     items: "main img",
   },
@@ -54,11 +56,11 @@ module.exports = {
 
 上の例だと、
 
-- **[ base_url(ベース URL) ]**:`https://example.com/`が収集するサイト URL
-- **[ search_url(索敵ページ URL) ]**:`/about`と`/recruit`にあるアンカー要素でリソースを収集するページのリストを作成
-- **[ selector.anchor(queryselectorAll) ]**:`search_url`で収集するアンカー要素`header a`
-- **[ selector.title(queryselector) ]**:アンカー要素で遷移した先の`h1`の textContent(スクレイピング対象)
-- **[ selector.items(queryselectorAll) ]**:アンカー要素で遷移した先の`main img`(スクレイピング対象)
+- **[ base_url(サイト URL) ]**:`https://example.com/`が収集するサイト URL
+- **[ survey.subdir(索敵ページのディレクトリリスト) ]**:`/about`と`/recruit`を索敵する
+- **[ survey.anchor(ターゲットページ特定要素) ]**:ターゲットページを特定するアンカー要素`header a`。queryselectorAll に対応。
+- **[ target.title(収集テキスト要素セレクタ) ]**:ターゲットページの`h1`の textContent。queryselector に対応(スクレイピング対象)
+- **[ target.items(収集画像要素セレクタ) ]**:ターゲットページの`main img`。queryselectorAll に対応(スクレイピング対象)
 
 となります。
 
