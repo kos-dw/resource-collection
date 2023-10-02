@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/kos-dw/resource-collection/compare/v2.0.0...v2.1.0) (2023-10-02)
+
+
+### Features
+
+* ✨️ (build) esbuildの導入 ([17247ac](https://github.com/kos-dw/resource-collection/commit/17247ac3b0c492dfb532d1cdce376cad772e4a6a))
+
 ## [2.0.0](https://github.com/kos-dw/resource-collection/compare/v1.0.4...v2.0.0) (2023-09-30)
 
 
