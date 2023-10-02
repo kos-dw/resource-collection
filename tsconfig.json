@@ -19,10 +19,17 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
 
+    /* Bundler mode */
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true, // コンパイル結果の.jsファイルなどを出力しない
+
     /* Type Checking */
     "strict": true,
     "skipLibCheck": true
   },
+  "include": ["src"],
   "ts-node": {
     "require": ["tsconfig-paths/register"],
     "files": true

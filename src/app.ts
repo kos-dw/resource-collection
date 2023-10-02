@@ -35,10 +35,11 @@ class ResourceCollection {
     private readonly logger: Logger
   ) {
     this.props = {
-      resourceUrls: ENV.RECIPE.search_url.map(
+      surveyUrls: ENV.RECIPE.survey.subdir.map(
         (leaf) => new URL(leaf, ENV.RECIPE.base_url).href
       ),
-      selector: ENV.RECIPE.selector,
+      surveyAnchor: ENV.RECIPE.survey.anchor,
+      target: ENV.RECIPE.target,
       allowedFilePattern: /.*\.(jpg|jpeg|png|svg|webp)$/i,
       thumbnail: true,
     };
@@ -72,14 +73,14 @@ class ResourceCollection {
     // ページのタイトルを取得して保存
     await this.salvage.storeText({
       page,
-      selector: this.props.selector.title,
+      selector: this.props.target.title,
       filePath: path.join(saveDir, "title.txt"),
     });
 
     // ページ内の画像のurlを取得後、画像ページに遷移してからダウンロード
     await this.salvage.storeImages({
       page,
-      selector: this.props.selector.items,
+      selector: this.props.target.items,
       router: this.router,
       saveDir,
       thumbnail: this.props.thumbnail,
@@ -133,9 +134,9 @@ class ResourceCollection {
     try {
       // リソースを収集するページのurlを取得
       const articles = await this.Rurls.get({
-        urls: this.props.resourceUrls,
+        urls: this.props.surveyUrls,
         page: page,
-        selector: this.props.selector.anchor,
+        selector: this.props.surveyAnchor,
         router: this.router,
       });
       for (let url of articles) {
