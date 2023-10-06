@@ -32,11 +32,12 @@ class ResourceCollection {
     private readonly router: GotoPageWithWait,
     private readonly Rurls: ResourceUrls,
     private readonly salvage: Salvage,
-    private readonly logger: Logger
+    private readonly logger: Logger,
   ) {
     this.props = {
+      base_url: ENV.RECIPE.base_url,
       surveyUrls: ENV.RECIPE.survey.subdir.map(
-        (leaf) => new URL(leaf, ENV.RECIPE.base_url).href
+        (leaf) => new URL(leaf, ENV.RECIPE.base_url).href,
       ),
       surveyAnchor: ENV.RECIPE.survey.anchor,
       target: ENV.RECIPE.target,
@@ -57,7 +58,10 @@ class ResourceCollection {
    * @memberof ResourceCollection
    */
   private async resourcesDownload(pageUrl: string, page: Page): Promise<void> {
-    const saveDir = path.join(this.ENV.DATA_DIR, escapeFileName(pageUrl));
+    const baseDir = this.ENV.DATA_DIR;
+    const dirForBaseUrl = escapeFileName(this.props.base_url);
+    const dirForleaf = escapeFileName(pageUrl);
+    const saveDir = path.join(baseDir, dirForBaseUrl, dirForleaf);
 
     // 保存先のディレクトリを作成
     try {
@@ -69,7 +73,6 @@ class ResourceCollection {
     // ページを開く
     await this.router.transion(pageUrl, page);
     console.log(`[moved]: ${pageUrl}`);
-
     // ページのタイトルを取得して保存
     await this.salvage.storeText({
       page,
@@ -104,8 +107,9 @@ class ResourceCollection {
     // アクセスログのディレクトリが存在しない場合は作成してログファイルを作成
     const logDir = path.dirname(this.ENV.ACCESS_LOG);
     if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-    if (!fs.existsSync(this.ENV.ACCESS_LOG))
+    if (!fs.existsSync(this.ENV.ACCESS_LOG)) {
       fs.writeFileSync(this.ENV.ACCESS_LOG, "", "utf-8");
+    }
 
     // 訪問済みのページを読み込む
     this.visitedPages = fs
