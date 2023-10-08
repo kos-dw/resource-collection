@@ -1,19 +1,31 @@
 import fs from "fs";
-import path from "path";
 import type { Browser, Page } from "puppeteer";
 import puppeteer from "puppeteer";
 
 import ENV from "~/constants/environment";
-import { GotoPageWithWait, Logger, ResourceUrls, Salvage } from "~/modules";
+import {
+  GotoPageWithWait,
+  Logger,
+  PullResources,
+  ResourceUrls,
+  Salvage,
+} from "~/modules";
 import { Props } from "~/types";
-import { escapeFileName } from "~/utils";
 
-const dipendecies: [ENV, GotoPageWithWait, ResourceUrls, Salvage, Logger] = [
+const dipendecies: [
+  ENV,
+  GotoPageWithWait,
+  ResourceUrls,
+  Salvage,
+  Logger,
+  PullResources,
+] = [
   new ENV(),
   new GotoPageWithWait(),
   new ResourceUrls(),
   new Salvage(),
   new Logger(),
+  new PullResources(),
 ];
 /**
  * リソースを収集する
@@ -33,6 +45,7 @@ class ResourceCollection {
     private readonly Rurls: ResourceUrls,
     private readonly salvage: Salvage,
     private readonly logger: Logger,
+    private readonly pullResources: PullResources,
   ) {
     this.props = {
       base_url: ENV.RECIPE.base_url,
@@ -48,49 +61,6 @@ class ResourceCollection {
 
   private visitedPages: string[] = [];
   private addLoggedPages: string[] = [];
-
-  /**
-   * 指定したページのリソースをダウンロードする
-   * @private
-   * @param {string} pageUrl
-   * @param {Page} page
-   * @return {Promise<void>}
-   * @memberof ResourceCollection
-   */
-  private async resourcesDownload(pageUrl: string, page: Page): Promise<void> {
-    const baseDir = this.ENV.DATA_DIR;
-    const dirForBaseUrl = escapeFileName(this.props.base_url);
-    const dirForleaf = escapeFileName(pageUrl);
-    const saveDir = path.join(baseDir, dirForBaseUrl, dirForleaf);
-
-    // 保存先のディレクトリを作成
-    try {
-      fs.mkdirSync(saveDir, { recursive: true });
-    } catch (e: any) {
-      console.error(e.message);
-    }
-
-    // ページを開く
-    await this.router.transion(pageUrl, page);
-    console.log(`[moved]: ${pageUrl}`);
-    // ページのタイトルを取得して保存
-    await this.salvage.storeText({
-      page,
-      selector: this.props.target.title,
-      filePath: path.join(saveDir, "title.txt"),
-    });
-
-    // ページ内の画像のurlを取得後、画像ページに遷移してからダウンロード
-    await this.salvage.storeImages({
-      page,
-      selector: this.props.target.items,
-      router: this.router,
-      saveDir,
-      thumbnail: this.props.thumbnail,
-    });
-
-    console.log("[completed]: downloading is done.\n");
-  }
 
   /**
    * 初期化
@@ -160,7 +130,16 @@ class ResourceCollection {
           continue;
         }
         // リソースをダウンロード
-        await this.resourcesDownload(url, page);
+        await this.pullResources.exec({
+          targetUrl: url,
+          pageForPuppeteer: page,
+          env: this.ENV,
+          router: this.router,
+          propsForCollection: this.props,
+          salvage: this.salvage,
+        });
+        console.log("[completed]: downloading is done.\n");
+
         // 今回訪問したページをstackに追加
         this.addLoggedPages.push(`${new Date().toString()}:[visited] ${url}`);
       }
