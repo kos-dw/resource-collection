@@ -68,6 +68,9 @@ export class Salvage {
 
     // 画像ページに遷移してからダウンロード
     for (let imageUrl of filteringUrls) {
+      // base64形式の画像は保存しない
+      if (/base64/.test(imageUrl)) continue;
+
       const res = await router.transion(imageUrl, page);
       if (res?.ok() == null) continue;
       const buffer = await res.buffer();
