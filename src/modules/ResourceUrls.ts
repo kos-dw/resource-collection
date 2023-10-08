@@ -36,7 +36,7 @@ export class ResourceUrls {
       }, selector);
       integratedUrl = [...new Set([...integratedUrl, ...articles])];
 
-      console.log(`[getting url]: ${url}`);
+      console.log(`[getting url]: from ${url}`);
       console.log(integratedUrl.join("\n"), "\n");
     }
     return integratedUrl;

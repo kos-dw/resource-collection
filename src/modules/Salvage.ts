@@ -110,7 +110,6 @@ export class Salvage {
    * @memberof Salvage
    */
   resolveFileUrl(imageUrls: string[]): string[] {
-    console.log(imageUrls);
     // Next.jsの画像のurlを判定するための文字列
     const stringForDicideToNextls = "_next/image?url=";
 
