@@ -62,25 +62,36 @@ export class Salvage {
       ] as HTMLImageElement[];
       return images.map((img) => img.src);
     }, selector);
+
     // 重複を削除
     const filteringUrls = [...new Set(imageUrls)];
+
     // 画像ページに遷移してからダウンロード
     for (let imageUrl of filteringUrls) {
       const res = await router.transion(imageUrl, page);
       if (res?.ok() == null) continue;
       const buffer = await res.buffer();
-      try {
-        fs.writeFileSync(path.join(saveDir, path.basename(imageUrl)), buffer);
-        console.log(`[downloaded]: ${imageUrl}`);
 
-        // メイン画像をサムネイル用として保存
-        if (thumbnail !== false && imageUrl === imageUrls.slice(-1)[0]) {
-          const prefix = typeof thumbnail === "string" ? thumbnail : "_thumb_";
+      try {
+        let timestamp = Date.now().toString().padStart(3, "0");
+        let extension = path.extname(imageUrl);
+        let filename = `image_${timestamp}${extension}`;
+
+        // 保存開始
+        fs.writeFileSync(path.join(saveDir, filename), buffer);
+        console.log(`[downloaded]: ${imageUrl} -> ${filename}`);
+
+        // 取得画像の最後の画像をメイン画像サムネイル用として保存
+        let imageUrlOfLast = imageUrls.slice(-1)[0];
+        if (thumbnail !== false && imageUrl === imageUrlOfLast) {
+          const prefix = typeof thumbnail === "string"
+            ? thumbnail
+            : "000thumb_";
           fs.writeFileSync(
-            path.join(saveDir, `${prefix}${path.basename(imageUrl)}`),
-            buffer
+            path.join(saveDir, `${prefix}${filename}`),
+            buffer,
           );
-          console.log(`[downloaded]: save thumbnail:${prefix}...`);
+          console.log(`[downloaded]: save thumbnail:${prefix}_${filename}`);
         }
       } catch (e: any) {
         console.error(e.message);
