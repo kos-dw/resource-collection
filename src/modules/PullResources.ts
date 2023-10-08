@@ -1,0 +1,74 @@
+import fs from "fs";
+import path from "path";
+import type { Page } from "puppeteer";
+
+import ENV from "~/constants/environment";
+import type { Props } from "~/types";
+import { escapeFileName } from "~/utils";
+import type { GotoPageWithWait } from "./GotoPageWithWait";
+import type { Salvage } from "./Salvage";
+
+type PullResourcesProps = {
+  /** 対象ページのURL */
+  targetUrl: string;
+  /** PuppeteerのPageオブジェクト */
+  pageForPuppeteer: Page;
+  /** ページ遷移用の関数 */
+  router: GotoPageWithWait;
+  /** リソース収集の設定 */
+  propsForCollection: Props;
+  /** リソースを保存するクラス */
+  salvage: Salvage;
+};
+export class PullResources {
+  // 定数を取得
+  env: ENV = new ENV();
+
+  /**
+   * 指定したページのリソースをダウンロードする
+   * @public
+   * @param {PullResourcesProps} props
+   * @return {Promise<void>}
+   * @memberof PullResources
+   */
+  public async exec(props: PullResourcesProps): Promise<void> {
+    const {
+      targetUrl,
+      pageForPuppeteer,
+      router,
+      propsForCollection,
+      salvage,
+    } = props;
+    const baseDir = this.env.DATA_DIR;
+    const dirForBaseUrl = escapeFileName(propsForCollection.base_url);
+    const dirForleaf = escapeFileName(targetUrl);
+    const saveDir = path.join(baseDir, dirForBaseUrl, dirForleaf);
+
+    // 保存先のディレクトリを作成
+    try {
+      fs.mkdirSync(saveDir, { recursive: true });
+    } catch (e: any) {
+      console.error(e.message);
+    }
+
+    // ページを開く
+    await router.transion(targetUrl, pageForPuppeteer);
+    console.log(`[moved]: ${targetUrl}`);
+
+    // ページのタイトルを取得して保存
+    await salvage.storeText({
+      page: pageForPuppeteer,
+      selector: propsForCollection.target.title,
+      filePath: path.join(saveDir, "title.txt"),
+    });
+
+    // ページ内の画像のurlを取得後、画像ページに遷移してからダウンロード
+    await salvage.storeImages({
+      page: pageForPuppeteer,
+      selector: propsForCollection.target.items,
+      router: router,
+      saveDir,
+      thumbnail: propsForCollection.thumbnail,
+    });
+  }
+}

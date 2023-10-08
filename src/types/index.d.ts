@@ -1,5 +1,7 @@
 /** ResourceCollection内で使用するプロパティの型定義 */
 export interface Props {
+  /** サイトURL */
+  base_url: string;
   /** 索敵ページのurl */
   surveyUrls: string[];
   /** 索敵ページに存在する、ターゲットページ特定するためのアンカー要素のセレクタ */
