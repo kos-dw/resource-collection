@@ -9,14 +9,21 @@ import type { GotoPageWithWait } from "./GotoPageWithWait";
 import type { Salvage } from "./Salvage";
 
 type PullResourcesProps = {
+  /** 対象ページのURL */
   targetUrl: string;
+  /** PuppeteerのPageオブジェクト */
   pageForPuppeteer: Page;
-  env: ENV;
+  /** ページ遷移用の関数 */
   router: GotoPageWithWait;
+  /** リソース収集の設定 */
   propsForCollection: Props;
+  /** リソースを保存するクラス */
   salvage: Salvage;
 };
 export class PullResources {
+  // 定数を取得
+  env: ENV = new ENV();
+
   /**
    * 指定したページのリソースをダウンロードする
    * @public
@@ -28,12 +35,11 @@ export class PullResources {
     const {
       targetUrl,
       pageForPuppeteer,
-      env,
       router,
       propsForCollection,
       salvage,
     } = props;
-    const baseDir = env.DATA_DIR;
+    const baseDir = this.env.DATA_DIR;
     const dirForBaseUrl = escapeFileName(propsForCollection.base_url);
     const dirForleaf = escapeFileName(targetUrl);
     const saveDir = path.join(baseDir, dirForBaseUrl, dirForleaf);

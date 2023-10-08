@@ -129,11 +129,11 @@ class ResourceCollection {
           console.log(`[skipped]: ${url}\n`);
           continue;
         }
+
         // リソースをダウンロード
         await this.pullResources.exec({
           targetUrl: url,
           pageForPuppeteer: page,
-          env: this.ENV,
           router: this.router,
           propsForCollection: this.props,
           salvage: this.salvage,

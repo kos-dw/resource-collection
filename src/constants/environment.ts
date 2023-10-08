@@ -3,7 +3,7 @@ import path from "path";
 import { Recipe } from "~/types";
 
 /**
- * 環境変数を管理する
+ * 定数を管理する
  * @class ENV
  */
 export default class ENV {
