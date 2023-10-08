@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/kos-dw/resource-collection/compare/v2.1.0...v2.2.0) (2023-10-08)
+
+
+### Features
+
+* ✨️ (*) nextjsの画像形式に対応 ([cd6c836](https://github.com/kos-dw/resource-collection/commit/cd6c83668b0f535e7f68d622ccfdb83a7d9a6e17))
+* ✨️ (Salvage.ts) 保存するファイル名の変更 ([b0fe8e6](https://github.com/kos-dw/resource-collection/commit/b0fe8e6df5ccc121b0063f0fdf7a9220778134d3))
+
+
+### Bug Fixes
+
+* 🐛 base64形式をスキップ ([1d821ac](https://github.com/kos-dw/resource-collection/commit/1d821acb93973f474f2b0e723b97e21242f4de87))
+
 ## [2.1.0](https://github.com/kos-dw/resource-collection/compare/v2.0.0...v2.1.0) (2023-10-02)
 
 
