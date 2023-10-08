@@ -9,10 +9,12 @@ import { Recipe } from "~/types";
 export default class ENV {
   /** アプリケーションのルートディレクトリ */
   APP_ROOT = path.resolve("~/../");
-  /** ログファイルの保存先 */
-  ACCESS_LOG = path.join(this.APP_ROOT, ".log/access.log");
-  /** リソースの保存先 */
+  /** リソースの保存ディレクトリ */
   DATA_DIR = path.join(this.APP_ROOT, ".temp");
+  /** ログファイルの保存ディレクトリ */
+  ACCESS_LOG_DIR = path.join(this.DATA_DIR, ".logs");
+  /** ログファイルの保存先 */
+  ACCESS_LOG_FILE = path.join(this.ACCESS_LOG_DIR, "access.log");
   /** puppeteerの設定 */
   PUPPETEER = {
     /** 初期化時のconfig */

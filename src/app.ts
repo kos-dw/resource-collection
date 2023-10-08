@@ -104,16 +104,26 @@ class ResourceCollection {
     const page = await browser.newPage();
     page.setUserAgent(this.ENV.PUPPETEER.USER_AGENT);
 
-    // アクセスログのディレクトリが存在しない場合は作成してログファイルを作成
-    const logDir = path.dirname(this.ENV.ACCESS_LOG);
-    if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-    if (!fs.existsSync(this.ENV.ACCESS_LOG)) {
-      fs.writeFileSync(this.ENV.ACCESS_LOG, "", "utf-8");
+    // 必要なディレクトリやファイルが存在しない場合は作成
+    try {
+      if (!fs.existsSync(this.ENV.DATA_DIR)) {
+        fs.mkdirSync(this.ENV.DATA_DIR, { recursive: true });
+      }
+
+      if (!fs.existsSync(this.ENV.ACCESS_LOG_DIR)) {
+        fs.mkdirSync(this.ENV.ACCESS_LOG_DIR, { recursive: true });
+      }
+
+      if (!fs.existsSync(this.ENV.ACCESS_LOG_FILE)) {
+        fs.writeFileSync(this.ENV.ACCESS_LOG_FILE, "", "utf-8");
+      }
+    } catch (e: any) {
+      console.error(e.message);
     }
 
     // 訪問済みのページを読み込む
     this.visitedPages = fs
-      .readFileSync(this.ENV.ACCESS_LOG, "utf-8")
+      .readFileSync(this.ENV.ACCESS_LOG_FILE, "utf-8")
       .trim()
       .split("\n")
       .map((row) => {
@@ -160,7 +170,10 @@ class ResourceCollection {
       await browser.close();
       // 訪問済みのページを保存
       if (this.addLoggedPages.length > 0) {
-        this.logger.storeVisitedLink(this.addLoggedPages, this.ENV.ACCESS_LOG);
+        this.logger.storeVisitedLink(
+          this.addLoggedPages,
+          this.ENV.ACCESS_LOG_FILE,
+        );
       }
     }
   }
