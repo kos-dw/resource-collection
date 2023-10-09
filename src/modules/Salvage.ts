@@ -119,12 +119,11 @@ export class Salvage {
     urls = [...new Set(urls)];
 
     // base64形式の画像は除外
-    urls = urls.filter((url) => {
-      return !(/base64/.test(url));
-    });
+    urls = urls.filter((url) => !/base64/.test(url));
 
     // 特定のURLを成形
     urls = urls.map((url) => {
+      // Next.jsのnext/imageモジュール画像のurlを成形
       if (url.includes(stringForDicideToNextls)) {
         const [imageFromNextjs] = url.split(stringForDicideToNextls)[1].split(
           "&",

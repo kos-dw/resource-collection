@@ -29,9 +29,25 @@ export class ResourceUrls {
         throw new Error(e.message);
       }
       const articles = await page.evaluate((selector) => {
-        const anchors = [
+        let anchors = [
           ...document.querySelectorAll(selector),
         ] as HTMLAnchorElement[];
+
+        // 特定のURLを除外
+        anchors = anchors.filter((a) => {
+          // 除外条件
+          // 1. target属性にblankが含まれる
+          // 2. href属性にjavascriptが含まれる
+          // 3. href属性がtel:またはmailto:で始まる
+          const ignoreCase = [
+            a.getAttribute("target")?.includes("blank"),
+            a.href.includes("javascript"),
+            /^[tel:|mailto:]/.test(a.href),
+          ];
+
+          return !ignoreCase.some((bool) => bool);
+        });
+
         return anchors.map((a) => a.href);
       }, selector);
       integratedUrl = [...new Set([...integratedUrl, ...articles])];
