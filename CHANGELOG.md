@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.1](https://github.com/kos-dw/resource-collection/compare/v2.2.0...v2.2.1) (2023-10-09)
+
+
+### Bug Fixes
+
+* 🐛 (ResourceUrls.ts) 特定のaタグを除外 ([ee26026](https://github.com/kos-dw/resource-collection/commit/ee260268a7630380dec87f2d6ea2fd04fa80cbfb)), closes [#6](https://github.com/kos-dw/resource-collection/issues/6) [#7](https://github.com/kos-dw/resource-collection/issues/7)
+
 ## [2.2.0](https://github.com/kos-dw/resource-collection/compare/v2.1.0...v2.2.0) (2023-10-08)
 
 
