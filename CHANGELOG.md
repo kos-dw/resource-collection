@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.2](https://github.com/kos-dw/resource-collection/compare/v2.2.1...v2.2.2) (2023-10-10)
+
+
+### Bug Fixes
+
+* 🐛 (*) 非同期読み込みの画像への対処 ([6a591ff](https://github.com/kos-dw/resource-collection/commit/6a591ffff335a01c36146e819223a0ed2e29cfec)), closes [#10](https://github.com/kos-dw/resource-collection/issues/10)
+
 ### [2.2.1](https://github.com/kos-dw/resource-collection/compare/v2.2.0...v2.2.1) (2023-10-09)
 
 
