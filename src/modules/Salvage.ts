@@ -72,12 +72,16 @@ export class Salvage {
 
     // 画像ページに遷移してからダウンロード
     for (let imageUrl of resolvedUrls) {
-      const res = await router.transion(imageUrl, page);
+      const res = await router.transion(
+        imageUrl,
+        page,
+        this.env.PUPPETEER.TRANSION_DELAY,
+      );
       if (res?.ok() == null) continue;
       const buffer = await res.buffer();
 
       try {
-        let timestamp = Date.now().toString().padStart(3, "0");
+        let timestamp = Date.now().toString();
         let extension = path.extname(imageUrl);
         let filename = `image_${timestamp}${extension}`;
 
@@ -110,7 +114,6 @@ export class Salvage {
    * @memberof Salvage
    */
   resolveFileUrl(imageUrls: string[]): string[] {
-    console.log(imageUrls);
     // Next.jsの画像のurlを判定するための文字列
     const stringForDicideToNextls = "_next/image?url=";
 
@@ -120,12 +123,11 @@ export class Salvage {
     urls = [...new Set(urls)];
 
     // base64形式の画像は除外
-    urls = urls.filter((url) => {
-      return !(/base64/.test(url));
-    });
+    urls = urls.filter((url) => !/base64/.test(url));
 
     // 特定のURLを成形
     urls = urls.map((url) => {
+      // Next.jsのnext/imageモジュール画像のurlを成形
       if (url.includes(stringForDicideToNextls)) {
         const [imageFromNextjs] = url.split(stringForDicideToNextls)[1].split(
           "&",

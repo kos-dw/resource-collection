@@ -72,7 +72,9 @@ class ResourceCollection {
     // Puppeteerの初期化
     const browser = await puppeteer.launch(this.ENV.PUPPETEER.CONFIG);
     const page = await browser.newPage();
-    page.setUserAgent(this.ENV.PUPPETEER.USER_AGENT);
+    if (this.ENV.PUPPETEER.USER_AGENT != null) {
+      page.setUserAgent(this.ENV.PUPPETEER.USER_AGENT);
+    }
 
     // 必要なディレクトリやファイルが存在しない場合は作成
     try {

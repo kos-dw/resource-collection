@@ -14,7 +14,7 @@ export interface Props {
   thumbnail: string | boolean;
 }
 
-/* レシピの型定義 */
+/* recipe.config.jsの型定義 */
 export interface Recipe {
   /** サイトURL */
   base_url: string;
@@ -32,4 +32,16 @@ export interface Recipe {
     /** 収集する画像のの要素のセレクタ(querySelectorAllに対応) */
     items: string;
   };
+}
+
+/* puppeteer.config.jsの型定義 */
+export interface PuppeteerConfig {
+  /** 初期化時のconfig */
+  CONFIG: PuppeteerLaunchOptions;
+  /** 画像の非同期読み込み対策スクロールの待機時間 */
+  WAIT_TIME_FOR_SCROLL?: number;
+  /** ページ遷移時の待機時間 */
+  TRANSION_DELAY?: number;
+  /** ユーザーエージェント */
+  USER_AGENT?: string;
 }
