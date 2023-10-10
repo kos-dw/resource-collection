@@ -1,4 +1,5 @@
 import type { Page } from "puppeteer";
+import ENV from "~/constants/environment";
 import type { GotoPageWithWait } from "./GotoPageWithWait";
 
 type Props = {
@@ -13,6 +14,9 @@ type Props = {
 };
 
 export class ResourceUrls {
+  // 定数を取得
+  env: ENV = new ENV();
+
   /**
    * 指定したページのurlを取得する
    * @param {Props}
@@ -24,7 +28,7 @@ export class ResourceUrls {
 
     for (let url of urls) {
       try {
-        await router.transion(url, page);
+        await router.transion(url, page, this.env.PUPPETEER.TRANSION_DELAY);
       } catch (e: any) {
         throw new Error(e.message);
       }

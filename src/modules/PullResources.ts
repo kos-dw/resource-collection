@@ -20,6 +20,7 @@ type PullResourcesProps = {
   /** リソースを保存するクラス */
   salvage: Salvage;
 };
+
 export class PullResources {
   // 定数を取得
   env: ENV = new ENV();
@@ -52,8 +53,16 @@ export class PullResources {
     }
 
     // ページを開く
-    await router.transion(targetUrl, pageForPuppeteer);
+    await router.transion(
+      targetUrl,
+      pageForPuppeteer,
+      this.env.PUPPETEER.TRANSION_DELAY,
+    );
     console.log(`[moved]: ${targetUrl}`);
+
+    // 非同期読み込みリソース対策として、ページ最下部まで移動する
+    console.log(`[waiting]: now scrolling to the bottom of the page...`);
+    await this.scrollDown(pageForPuppeteer);
 
     // ページのタイトルを取得して保存
     await salvage.storeText({
@@ -70,5 +79,26 @@ export class PullResources {
       saveDir,
       thumbnail: propsForCollection.thumbnail,
     });
+  }
+
+  /**
+   * 非同期読み込みリソース対策として、ページ最下部まで移動する
+   * @param {Page} page
+   * @return {Promise<void>}
+   * @memberof PullResources
+   */
+  public async scrollDown(page: Page): Promise<void> {
+    await page.evaluate(async (waitTimeForScroll) => {
+      const waitingTimeForLoading = waitTimeForScroll;
+      const documentHeight = document.body.scrollHeight;
+      const viewHeight = window.innerHeight;
+      const numberOfDescents = Math.ceil(documentHeight / viewHeight);
+      for (let i = 1; i <= numberOfDescents; i++) {
+        window.scrollBy(0, viewHeight);
+        await new Promise((resolve) =>
+          setTimeout(resolve, waitingTimeForLoading)
+        );
+      }
+    }, this.env.PUPPETEER.WAIT_TIME_FOR_SCROLL);
   }
 }

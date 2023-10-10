@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Recipe } from "~/types";
+import { PuppeteerConfig, Recipe } from "~/types";
 
 /**
  * 定数を管理する
@@ -16,28 +16,15 @@ export default class ENV {
   /** ログファイルの保存先 */
   ACCESS_LOG_FILE = path.join(this.ACCESS_LOG_DIR, "access.log");
   /** puppeteerの設定 */
-  PUPPETEER = {
-    /** 初期化時のconfig */
-    CONFIG: {
-      headless: (() => {
-        switch (process.env.PUPPETEER_ISHEADLESS) {
-          case "true":
-            return true;
-          case "false":
-            return false;
-          case "new":
-            return "new";
-          default:
-            return undefined;
-        }
-      })(),
-      slowMo: 50,
-    } as const,
-    /** ページ遷移時の待機時間 */
-    TRANSION_DELAY: 1500,
-    /** ユーザーエージェント */
-    USER_AGENT: process.env.USER_AGENT || "",
-  };
+  get PUPPETEER() {
+    const puppeteerConfigPath = path.join(this.APP_ROOT, "puppeteer.config.js");
+    if (!fs.existsSync(puppeteerConfigPath)) {
+      console.error(`[error]: puppeteerConfigPath is not found.`);
+      process.exit(1);
+    }
+    const puppeteerConfig: PuppeteerConfig = require(puppeteerConfigPath);
+    return puppeteerConfig;
+  }
   /** レシピ */
   get RECIPE() {
     const recipePath = path.join(this.APP_ROOT, "recipe.config.js");

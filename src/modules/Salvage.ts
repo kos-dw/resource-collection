@@ -72,12 +72,16 @@ export class Salvage {
 
     // 画像ページに遷移してからダウンロード
     for (let imageUrl of resolvedUrls) {
-      const res = await router.transion(imageUrl, page);
+      const res = await router.transion(
+        imageUrl,
+        page,
+        this.env.PUPPETEER.TRANSION_DELAY,
+      );
       if (res?.ok() == null) continue;
       const buffer = await res.buffer();
 
       try {
-        let timestamp = Date.now().toString().padStart(3, "0");
+        let timestamp = Date.now().toString();
         let extension = path.extname(imageUrl);
         let filename = `image_${timestamp}${extension}`;
 
