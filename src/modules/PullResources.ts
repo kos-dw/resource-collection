@@ -11,8 +11,6 @@ import type { Salvage } from "./Salvage";
 type PullResourcesProps = {
   /** 対象ページのURL */
   targetUrl: string;
-  /** PuppeteerのPageオブジェクト */
-  pageForPuppeteer: Page;
   /** ページ遷移用の関数 */
   router: GotoPageWithWait;
   /** リソース収集の設定 */
@@ -35,7 +33,6 @@ export class PullResources {
   public async exec(props: PullResourcesProps): Promise<void> {
     const {
       targetUrl,
-      pageForPuppeteer,
       router,
       propsForCollection,
       salvage,
@@ -52,28 +49,29 @@ export class PullResources {
       console.error(e.message);
     }
 
+    // PuppeteerのPageオブジェクトがnullの場合はエラーを投げる
+    if (router.page == null) throw new Error("puppeteerPage is null");
+
     // ページを開く
     await router.transion(
       targetUrl,
-      pageForPuppeteer,
       this.env.PUPPETEER.TRANSION_DELAY,
     );
     console.log(`[moved]: ${targetUrl}`);
 
     // 非同期読み込みリソース対策として、ページ最下部まで移動する
     console.log(`[waiting]: now scrolling to the bottom of the page...`);
-    await this.scrollDown(pageForPuppeteer);
+    await this.scrollDown(router.page);
 
     // ページのタイトルを取得して保存
     await salvage.storeText({
-      page: pageForPuppeteer,
+      router,
       selector: propsForCollection.target.title,
       filePath: path.join(saveDir, "title.txt"),
     });
 
     // ページ内の画像のurlを取得後、画像ページに遷移してからダウンロード
     await salvage.storeImages({
-      page: pageForPuppeteer,
       selector: propsForCollection.target.items,
       router: router,
       saveDir,

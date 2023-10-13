@@ -1,12 +1,9 @@
-import type { Page } from "puppeteer";
 import ENV from "~/constants/environment";
 import type { GotoPageWithWait } from "./GotoPageWithWait";
 
 type Props = {
   /** アンカーを収集するページのurl */
   urls: string[];
-  /** PuppeteerのPageオブジェクト */
-  page: Page;
   /** スクレイピングページでの要素取得用セレクタ */
   selector: string;
   /** ページ遷移用の関数 */
@@ -23,16 +20,17 @@ export class ResourceUrls {
    * @return {Promise<string[]>}
    * @memberof ResourceUrls
    */
-  async get({ urls, page, selector, router }: Props): Promise<string[]> {
+  async get({ urls, selector, router }: Props): Promise<string[]> {
     let integratedUrl: string[] | null = [];
 
+    // PuppeteerのPageオブジェクトがnullの場合はエラーを投げる
+    if (router.page == null) throw new Error("puppeteerPage is null");
+
     for (let url of urls) {
-      try {
-        await router.transion(url, page, this.env.PUPPETEER.TRANSION_DELAY);
-      } catch (e: any) {
-        throw new Error(e.message);
-      }
-      const articles = await page.evaluate((selector) => {
+      // ページ遷移
+      await router.transion(url, this.env.PUPPETEER.TRANSION_DELAY);
+
+      const articles = await router.page.evaluate((selector) => {
         let anchors = [
           ...document.querySelectorAll(selector),
         ] as HTMLAnchorElement[];

@@ -32,6 +32,7 @@ const dipendecies: [
  * @class ResourceCollection
  */
 class ResourceCollection {
+  // プロパティ
   props: Props;
 
   /**
@@ -75,6 +76,9 @@ class ResourceCollection {
     if (this.ENV.PUPPETEER.USER_AGENT != null) {
       page.setUserAgent(this.ENV.PUPPETEER.USER_AGENT);
     }
+
+    // GotoPageWithWaitにPuppeteerのPageオブジェクトをセット
+    this.router.setPage = page;
 
     // 必要なディレクトリやファイルが存在しない場合は作成
     try {
@@ -121,7 +125,6 @@ class ResourceCollection {
       // リソースを収集するページのurlを取得
       const articles = await this.Rurls.get({
         urls: this.props.surveyUrls,
-        page: page,
         selector: this.props.surveyAnchor,
         router: this.router,
       });
@@ -135,7 +138,6 @@ class ResourceCollection {
         // リソースをダウンロード
         await this.pullResources.exec({
           targetUrl: url,
-          pageForPuppeteer: page,
           router: this.router,
           propsForCollection: this.props,
           salvage: this.salvage,

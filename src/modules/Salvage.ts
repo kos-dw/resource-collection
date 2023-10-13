@@ -1,12 +1,11 @@
 import fs from "fs";
 import path from "path";
-import type { Page } from "puppeteer";
 import ENV from "~/constants/environment";
 import type { GotoPageWithWait } from "./GotoPageWithWait";
 
 type StoreTextProps = {
-  /** PuppeteerのPageオブジェクト */
-  page: Page;
+  /** ページ遷移用の関数 */
+  router: GotoPageWithWait;
   /** スクレイピングページでの要素取得用セレクタ */
   selector: string;
   /** ファイルの保存先 */
@@ -14,8 +13,6 @@ type StoreTextProps = {
 };
 
 type StoreImagesProps = {
-  /** PuppeteerのPageオブジェクト */
-  page: Page;
   /** スクレイピングページでの要素取得用セレクタ */
   selector: string;
   /** ページ遷移用の関数 */
@@ -35,8 +32,11 @@ export class Salvage {
    * @param {StoreTextProps}
    * @memberof Salvage
    */
-  async storeText({ page, selector, filePath }: StoreTextProps) {
-    const title = await page.evaluate((selector) => {
+  async storeText({ router, selector, filePath }: StoreTextProps) {
+    // PuppeteerのPageオブジェクトがnullの場合はエラーを投げる
+    if (router.page == null) throw new Error("puppeteerPage is null");
+
+    const title = await router.page.evaluate((selector) => {
       const title = document.querySelector(selector);
       return title?.textContent;
     }, selector);
@@ -53,14 +53,16 @@ export class Salvage {
    * @memberof Salvage
    */
   async storeImages({
-    page,
     selector,
     router,
     saveDir,
     thumbnail,
   }: StoreImagesProps) {
+    // PuppeteerのPageオブジェクトがnullの場合はエラーを投げる
+    if (router.page == null) throw new Error("puppeteerPage is null");
+
     // ページ内の画像のurlを取得
-    const imageUrls = await page.evaluate((selector) => {
+    const imageUrls = await router.page.evaluate((selector) => {
       const images = [
         ...document.querySelectorAll(selector),
       ] as HTMLImageElement[];
@@ -74,7 +76,6 @@ export class Salvage {
     for (let imageUrl of resolvedUrls) {
       const res = await router.transion(
         imageUrl,
-        page,
         this.env.PUPPETEER.TRANSION_DELAY,
       );
       if (res?.ok() == null) continue;
