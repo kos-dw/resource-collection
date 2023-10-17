@@ -7,9 +7,9 @@
   "scripts": {
     "start": "node --require esbuild-register src/app.ts",
     "build": "node esbuild.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "serve:start": "pm2 start mocksite/server.js --name rsrc_col",
     "serve:stop": "pm2 delete rsrc_col",
+    "test": "vitest",
     "release": "standard-version",
     "preinstall": "typesync || :"
   },
@@ -29,6 +29,8 @@
     "standard-version": "^9.5.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2",
-    "typesync": "^0.11.1"
+    "typesync": "^0.11.1",
+    "vite": "^4.4.11",
+    "vitest": "^0.34.6"
   }
 }

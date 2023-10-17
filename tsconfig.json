@@ -10,8 +10,9 @@
       "~/*": ["src/*"]
     },
     // "rootDirs": [],
-    "typeRoots": ["./src/types"],
-
+    "typeRoots": ["./src/types","./node_modules","./node_modules/@types"],
+    "types": ["vitest/globals"],
+    
     /* Emit */
     "outDir": "./dist",
 
@@ -27,7 +28,8 @@
 
     /* Type Checking */
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
   },
   "include": ["src"],
   "ts-node": {
