@@ -89,7 +89,7 @@ export class PullResources {
       for (let i = 1; i <= numberOfDescents; i++) {
         window.scrollBy(0, viewHeight);
         await new Promise((resolve) =>
-          setTimeout(resolve, waitingTimeForLoading)
+          setTimeout(resolve, waitingTimeForLoading),
         );
       }
     }, this.env.PUPPETEER.WAIT_TIME_FOR_SCROLL);

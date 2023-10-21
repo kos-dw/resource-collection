@@ -74,7 +74,7 @@ export class Salvage {
     for (const imageUrl of resolvedUrls) {
       const res = await this.router.transion(
         imageUrl,
-        this.env.PUPPETEER.TRANSION_DELAY
+        this.env.PUPPETEER.TRANSION_DELAY,
       );
       if (res?.ok() == null) continue;
       const buffer = await res.buffer();

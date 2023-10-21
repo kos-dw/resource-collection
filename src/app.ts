@@ -55,7 +55,7 @@ class ResourceCollection {
     this.props = {
       base_url: this.ENV.RECIPE.base_url,
       surveyUrls: this.ENV.RECIPE.survey.subdir.map(
-        (leaf) => new URL(leaf, this.ENV.RECIPE.base_url).href
+        (leaf) => new URL(leaf, this.ENV.RECIPE.base_url).href,
       ),
       surveyAnchor: this.ENV.RECIPE.survey.anchor,
       target: this.ENV.RECIPE.target,
@@ -158,7 +158,7 @@ class ResourceCollection {
       if (this.addLoggedPages.length > 0) {
         this.logger.storeVisitedLink(
           this.addLoggedPages,
-          this.ENV.ACCESS_LOG_FILE
+          this.ENV.ACCESS_LOG_FILE,
         );
       }
     }
