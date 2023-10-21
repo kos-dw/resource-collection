@@ -1,17 +1,19 @@
-import type { Assertion, AsymmetricMatchersContaining } from "vitest";
+import "vitest";
 
 interface CustomMatchers<R = unknown> {
   toBeArrayOfStrings(): R;
 }
 
 declare module "vitest" {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   interface Assertion<T = any> extends CustomMatchers<T> {}
   interface AsymmetricMatchersContaining extends CustomMatchers {}
 }
 
 // stringの配列かどうかを検証するカスタムマッチャー
-export function toBeArrayOfStrings(received: any[]) {
-  const pass = Array.isArray(received) &&
+export function toBeArrayOfStrings(received: unknown[]) {
+  const pass =
+    Array.isArray(received) &&
     received.every((item) => typeof item === "string");
   if (pass) {
     return {

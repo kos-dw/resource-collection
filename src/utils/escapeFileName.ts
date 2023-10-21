@@ -4,5 +4,5 @@
  * @return {string}
  */
 export function escapeFileName(url: string): string {
-  return url.replace(/[\.\/:*?"<>|]/g, "_");
+  return url.replace(/[./:*?"<>|]/g, "_");
 }

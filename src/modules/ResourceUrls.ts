@@ -29,7 +29,7 @@ export class ResourceUrls {
     // PuppeteerのPageオブジェクトがnullの場合はエラーを投げる
     if (this.router?.page == null) throw new Error("puppeteerPage is null");
 
-    for (let url of urls) {
+    for (const url of urls) {
       // ページ遷移
       await this.router.transion(url, this.env.PUPPETEER.TRANSION_DELAY);
 

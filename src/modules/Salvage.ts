@@ -43,8 +43,10 @@ export class Salvage {
     }, selector);
     try {
       fs.writeFileSync(filePath, title ?? "no title");
-    } catch (e: any) {
-      console.error(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.error(e.message);
+      }
     }
   }
 
@@ -69,7 +71,7 @@ export class Salvage {
     const resolvedUrls = this.resolveFileUrl(imageUrls);
 
     // 画像ページに遷移してからダウンロード
-    for (let imageUrl of resolvedUrls) {
+    for (const imageUrl of resolvedUrls) {
       const res = await this.router.transion(
         imageUrl,
         this.env.PUPPETEER.TRANSION_DELAY
@@ -78,24 +80,26 @@ export class Salvage {
       const buffer = await res.buffer();
 
       try {
-        let timestamp = Date.now().toString();
-        let extension = path.extname(imageUrl);
-        let filename = `image_${timestamp}${extension}`;
+        const timestamp = Date.now().toString();
+        const extension = path.extname(imageUrl);
+        const filename = `image_${timestamp}${extension}`;
 
         // 保存開始
         fs.writeFileSync(path.join(saveDir, filename), buffer);
         console.log(`[downloaded]: ${imageUrl} -> ${filename}`);
 
         // 取得画像の最後の画像をメイン画像サムネイル用として保存
-        let imageUrlOfLast = imageUrls.slice(-1)[0];
+        const imageUrlOfLast = imageUrls.slice(-1)[0];
         if (thumbnail !== false && imageUrl === imageUrlOfLast) {
           const prefix =
             typeof thumbnail === "string" ? thumbnail : "000thumb_";
           fs.writeFileSync(path.join(saveDir, `${prefix}${filename}`), buffer);
           console.log(`[downloaded]: save thumbnail:${prefix}_${filename}`);
         }
-      } catch (e: any) {
-        console.error(e.message);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          console.error(e.message);
+        }
       }
     }
   }

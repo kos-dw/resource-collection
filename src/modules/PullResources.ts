@@ -43,8 +43,10 @@ export class PullResources {
     // 保存先のディレクトリを作成
     try {
       fs.mkdirSync(saveDir, { recursive: true });
-    } catch (e: any) {
-      console.error(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.error(e.message);
+      }
     }
 
     // PuppeteerのPageオブジェクトがnullの場合はエラーを投げる

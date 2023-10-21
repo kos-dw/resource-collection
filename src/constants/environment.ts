@@ -16,23 +16,23 @@ export default class ENV {
   /** ログファイルの保存先 */
   ACCESS_LOG_FILE = path.join(this.ACCESS_LOG_DIR, "access.log");
   /** puppeteerの設定 */
-  get PUPPETEER() {
+  get PUPPETEER(): PuppeteerConfig {
     const puppeteerConfigPath = path.join(this.APP_ROOT, "puppeteer.config.js");
     if (!fs.existsSync(puppeteerConfigPath)) {
       console.error(`[error]: puppeteerConfigPath is not found.`);
       process.exit(1);
     }
-    const puppeteerConfig: PuppeteerConfig = require(puppeteerConfigPath);
-    return puppeteerConfig;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require(puppeteerConfigPath);
   }
   /** レシピ */
-  get RECIPE() {
+  get RECIPE(): Recipe {
     const recipePath = path.join(this.APP_ROOT, "recipe.config.js");
     if (!fs.existsSync(recipePath)) {
       console.error(`[error]: recipe.config.js is not found.`);
       process.exit(1);
     }
-    const recipe: Recipe = require(recipePath);
-    return recipe;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require(recipePath);
   }
 }

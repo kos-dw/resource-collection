@@ -40,7 +40,6 @@ export class RurlsTest {
   private propsForVisittingPage = {
     urls: ["http://localhost:8000/"],
     selector: "main nav a",
-    router: this.router,
   };
 
   /**
@@ -66,7 +65,7 @@ export class RurlsTest {
       await this.init();
 
       // URLを取得
-      const rurls = new ResourceUrls();
+      const rurls = new ResourceUrls({ router: this.router });
       const urls = await rurls.get(this.propsForVisittingPage);
 
       return urls;
