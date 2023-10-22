@@ -1,6 +1,6 @@
 {
   "name": "resource-collection",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "",
   "main": "app.js",
   "private": true,
