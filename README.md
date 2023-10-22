@@ -76,7 +76,7 @@ pnpm start
 
 ## Others
 
-- スクレイピングを行ったページ URL は`/.log/access.log`に登録されます。
-- `/.log/access.log`に記載されている URL は、スクレイピングを再度実行しても、相手先サーバーに負荷をかけないためにスキップされます。
-- 再度収集したいときは`/.log/access.log`の該当 URL の行を削除してから実行してください。
+- スクレイピングを行ったページ URL は`/.temp/.logs/access.log`に登録されます。
+- `/.temp/.logs/access.log`に記載されている URL は、スクレイピングを再度実行しても、相手先サーバーに負荷をかけないためにスキップされます。
+- 再度収集したいときは`/.temp/.logs/access.log`の該当 URL の行を削除してから実行してください。
 - どうしてもスタンドアロンで実行したいときは、`npm run build` or `yarn run build` or `pnpm run build`でビルドしたあとに、`node dist/app.js`で同じ動作を得られます。(ただしファイルはでかいです。)
