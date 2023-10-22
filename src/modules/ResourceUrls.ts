@@ -1,21 +1,21 @@
-import type { Page } from "puppeteer";
 import ENV from "~/constants/environment";
 import type { GotoPageWithWait } from "./GotoPageWithWait";
 
 type Props = {
   /** アンカーを収集するページのurl */
   urls: string[];
-  /** PuppeteerのPageオブジェクト */
-  page: Page;
   /** スクレイピングページでの要素取得用セレクタ */
   selector: string;
-  /** ページ遷移用の関数 */
-  router: GotoPageWithWait;
 };
 
 export class ResourceUrls {
   // 定数を取得
   env: ENV = new ENV();
+  router: GotoPageWithWait | null = null;
+
+  constructor({ router }: { router: GotoPageWithWait }) {
+    this.router = router;
+  }
 
   /**
    * 指定したページのurlを取得する
@@ -23,16 +23,17 @@ export class ResourceUrls {
    * @return {Promise<string[]>}
    * @memberof ResourceUrls
    */
-  async get({ urls, page, selector, router }: Props): Promise<string[]> {
+  async get({ urls, selector }: Props): Promise<string[]> {
     let integratedUrl: string[] | null = [];
 
-    for (let url of urls) {
-      try {
-        await router.transion(url, page, this.env.PUPPETEER.TRANSION_DELAY);
-      } catch (e: any) {
-        throw new Error(e.message);
-      }
-      const articles = await page.evaluate((selector) => {
+    // PuppeteerのPageオブジェクトがnullの場合はエラーを投げる
+    if (this.router?.page == null) throw new Error("puppeteerPage is null");
+
+    for (const url of urls) {
+      // ページ遷移
+      await this.router.transion(url, this.env.PUPPETEER.TRANSION_DELAY);
+
+      const articles = await this.router.page.evaluate((selector) => {
         let anchors = [
           ...document.querySelectorAll(selector),
         ] as HTMLAnchorElement[];

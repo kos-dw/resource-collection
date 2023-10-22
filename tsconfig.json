@@ -10,7 +10,8 @@
       "~/*": ["src/*"]
     },
     // "rootDirs": [],
-    "typeRoots": ["./src/types"],
+    "typeRoots": ["./src/types", "./node_modules", "./node_modules/@types"],
+    "types": ["vitest/globals"],
 
     /* Emit */
     "outDir": "./dist",

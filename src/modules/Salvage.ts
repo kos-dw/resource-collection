@@ -1,12 +1,9 @@
 import fs from "fs";
 import path from "path";
-import type { Page } from "puppeteer";
 import ENV from "~/constants/environment";
 import type { GotoPageWithWait } from "./GotoPageWithWait";
 
 type StoreTextProps = {
-  /** PuppeteerのPageオブジェクト */
-  page: Page;
   /** スクレイピングページでの要素取得用セレクタ */
   selector: string;
   /** ファイルの保存先 */
@@ -14,12 +11,8 @@ type StoreTextProps = {
 };
 
 type StoreImagesProps = {
-  /** PuppeteerのPageオブジェクト */
-  page: Page;
   /** スクレイピングページでの要素取得用セレクタ */
   selector: string;
-  /** ページ遷移用の関数 */
-  router: GotoPageWithWait;
   /** ファイルの保存先 */
   saveDir: string;
   /** サムネイルを作成するかどうか */
@@ -29,21 +22,31 @@ type StoreImagesProps = {
 export class Salvage {
   // 定数を取得
   env: ENV = new ENV();
+  router: GotoPageWithWait | null = null;
+
+  constructor({ router }: { router: GotoPageWithWait }) {
+    this.router = router;
+  }
 
   /**
    * ページ内のテキストを取得して保存する
    * @param {StoreTextProps}
    * @memberof Salvage
    */
-  async storeText({ page, selector, filePath }: StoreTextProps) {
-    const title = await page.evaluate((selector) => {
+  async storeText({ selector, filePath }: StoreTextProps) {
+    // PuppeteerのPageオブジェクトがnullの場合はエラーを投げる
+    if (this.router?.page == null) throw new Error("puppeteerPage is null");
+
+    const title = await this.router.page.evaluate((selector) => {
       const title = document.querySelector(selector);
       return title?.textContent;
     }, selector);
     try {
       fs.writeFileSync(filePath, title ?? "no title");
-    } catch (e: any) {
-      console.error(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.error(e.message);
+      }
     }
   }
 
@@ -52,15 +55,12 @@ export class Salvage {
    * @param {StoreImagesProps}
    * @memberof Salvage
    */
-  async storeImages({
-    page,
-    selector,
-    router,
-    saveDir,
-    thumbnail,
-  }: StoreImagesProps) {
+  async storeImages({ selector, saveDir, thumbnail }: StoreImagesProps) {
+    // PuppeteerのPageオブジェクトがnullの場合はエラーを投げる
+    if (this.router?.page == null) throw new Error("puppeteerPage is null");
+
     // ページ内の画像のurlを取得
-    const imageUrls = await page.evaluate((selector) => {
+    const imageUrls = await this.router.page.evaluate((selector) => {
       const images = [
         ...document.querySelectorAll(selector),
       ] as HTMLImageElement[];
@@ -71,38 +71,35 @@ export class Salvage {
     const resolvedUrls = this.resolveFileUrl(imageUrls);
 
     // 画像ページに遷移してからダウンロード
-    for (let imageUrl of resolvedUrls) {
-      const res = await router.transion(
+    for (const imageUrl of resolvedUrls) {
+      const res = await this.router.transion(
         imageUrl,
-        page,
         this.env.PUPPETEER.TRANSION_DELAY,
       );
       if (res?.ok() == null) continue;
       const buffer = await res.buffer();
 
       try {
-        let timestamp = Date.now().toString();
-        let extension = path.extname(imageUrl);
-        let filename = `image_${timestamp}${extension}`;
+        const timestamp = Date.now().toString();
+        const extension = path.extname(imageUrl);
+        const filename = `image_${timestamp}${extension}`;
 
         // 保存開始
         fs.writeFileSync(path.join(saveDir, filename), buffer);
         console.log(`[downloaded]: ${imageUrl} -> ${filename}`);
 
         // 取得画像の最後の画像をメイン画像サムネイル用として保存
-        let imageUrlOfLast = imageUrls.slice(-1)[0];
+        const imageUrlOfLast = imageUrls.slice(-1)[0];
         if (thumbnail !== false && imageUrl === imageUrlOfLast) {
-          const prefix = typeof thumbnail === "string"
-            ? thumbnail
-            : "000thumb_";
-          fs.writeFileSync(
-            path.join(saveDir, `${prefix}${filename}`),
-            buffer,
-          );
+          const prefix =
+            typeof thumbnail === "string" ? thumbnail : "000thumb_";
+          fs.writeFileSync(path.join(saveDir, `${prefix}${filename}`), buffer);
           console.log(`[downloaded]: save thumbnail:${prefix}_${filename}`);
         }
-      } catch (e: any) {
-        console.error(e.message);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          console.error(e.message);
+        }
       }
     }
   }
@@ -129,9 +126,9 @@ export class Salvage {
     urls = urls.map((url) => {
       // Next.jsのnext/imageモジュール画像のurlを成形
       if (url.includes(stringForDicideToNextls)) {
-        const [imageFromNextjs] = url.split(stringForDicideToNextls)[1].split(
-          "&",
-        );
+        const [imageFromNextjs] = url
+          .split(stringForDicideToNextls)[1]
+          .split("&");
         const decodedUrl = decodeURIComponent(imageFromNextjs);
         return new URL(decodedUrl, this.env.RECIPE.base_url).href;
       }

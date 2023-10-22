@@ -1,7 +1,5 @@
 import fs from "fs";
-import type { Browser, Page } from "puppeteer";
-import puppeteer from "puppeteer";
-
+import puppeteer, { type Browser } from "puppeteer";
 import ENV from "~/constants/environment";
 import {
   GotoPageWithWait,
@@ -12,69 +10,76 @@ import {
 } from "~/modules";
 import { Props } from "~/types";
 
-const dipendecies: [
-  ENV,
-  GotoPageWithWait,
-  ResourceUrls,
-  Salvage,
-  Logger,
-  PullResources,
-] = [
-  new ENV(),
-  new GotoPageWithWait(),
-  new ResourceUrls(),
-  new Salvage(),
-  new Logger(),
-  new PullResources(),
-];
+/**
+ * 依存関係
+ * @interface dependencies
+ */
+class dependencies {
+  public ENV = new ENV();
+  public router = new GotoPageWithWait();
+  public Rurls = new ResourceUrls({ router: this.router });
+  public salvage = new Salvage({ router: this.router });
+  public pullResources = new PullResources({ router: this.router });
+  public logger = new Logger();
+}
+
 /**
  * リソースを収集する
  * @class ResourceCollection
  */
 class ResourceCollection {
-  props: Props;
+  // プロパティの初期化
+  private readonly props: Props;
+  private readonly ENV: ENV;
+  private readonly router: GotoPageWithWait;
+  private readonly Rurls: ResourceUrls;
+  private readonly salvage: Salvage;
+  private readonly logger: Logger;
+  private readonly pullResources: PullResources;
+  private visitedPages: string[] = [];
+  private addLoggedPages: string[] = [];
 
   /**
    * インスタンス初期化
-   * @param {ENV} ENV
+   * @param {dependencies} deps
    * @memberof ResourceCollection
    */
-  constructor(
-    private readonly ENV: ENV,
-    private readonly router: GotoPageWithWait,
-    private readonly Rurls: ResourceUrls,
-    private readonly salvage: Salvage,
-    private readonly logger: Logger,
-    private readonly pullResources: PullResources,
-  ) {
+  constructor(deps: dependencies) {
+    this.ENV = deps.ENV;
+    this.router = deps.router;
+    this.Rurls = deps.Rurls;
+    this.salvage = deps.salvage;
+    this.logger = deps.logger;
+    this.pullResources = deps.pullResources;
+
     this.props = {
-      base_url: ENV.RECIPE.base_url,
-      surveyUrls: ENV.RECIPE.survey.subdir.map(
-        (leaf) => new URL(leaf, ENV.RECIPE.base_url).href,
+      base_url: this.ENV.RECIPE.base_url,
+      surveyUrls: this.ENV.RECIPE.survey.subdir.map(
+        (leaf) => new URL(leaf, this.ENV.RECIPE.base_url).href,
       ),
-      surveyAnchor: ENV.RECIPE.survey.anchor,
-      target: ENV.RECIPE.target,
+      surveyAnchor: this.ENV.RECIPE.survey.anchor,
+      target: this.ENV.RECIPE.target,
       allowedFilePattern: /.*\.(jpg|jpeg|png|svg|webp)$/i,
       thumbnail: true,
     };
   }
 
-  private visitedPages: string[] = [];
-  private addLoggedPages: string[] = [];
-
   /**
    * 初期化
    * @private
-   * @return {Promise<{ browser: Browser; page: Page }>}
+   * @return {Promise<{ browser: Browser; }>}
    * @memberof ResourceCollection
    */
-  private async init(): Promise<{ browser: Browser; page: Page }> {
+  private async init(): Promise<{ browser: Browser }> {
     // Puppeteerの初期化
     const browser = await puppeteer.launch(this.ENV.PUPPETEER.CONFIG);
     const page = await browser.newPage();
     if (this.ENV.PUPPETEER.USER_AGENT != null) {
       page.setUserAgent(this.ENV.PUPPETEER.USER_AGENT);
     }
+
+    // GotoPageWithWaitにPuppeteerのPageオブジェクトをセット
+    this.router.setPage = page;
 
     // 必要なディレクトリやファイルが存在しない場合は作成
     try {
@@ -89,8 +94,10 @@ class ResourceCollection {
       if (!fs.existsSync(this.ENV.ACCESS_LOG_FILE)) {
         fs.writeFileSync(this.ENV.ACCESS_LOG_FILE, "", "utf-8");
       }
-    } catch (e: any) {
-      console.error(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.error(e.message);
+      }
     }
 
     // 訪問済みのページを読み込む
@@ -106,7 +113,7 @@ class ResourceCollection {
       .filter((url) => url !== "");
     // 重複を削除
     this.visitedPages = [...new Set(this.visitedPages)];
-    return { browser, page };
+    return { browser };
   }
 
   /**
@@ -115,17 +122,15 @@ class ResourceCollection {
    * @memberof ResourceCollection
    */
   public async main(): Promise<void> {
-    const { browser, page } = await this.init();
+    const { browser } = await this.init();
 
     try {
       // リソースを収集するページのurlを取得
       const articles = await this.Rurls.get({
         urls: this.props.surveyUrls,
-        page: page,
         selector: this.props.surveyAnchor,
-        router: this.router,
       });
-      for (let url of articles) {
+      for (const url of articles) {
         // 訪問済みのページはスキップ
         if (this.visitedPages.includes(url)) {
           console.log(`[skipped]: ${url}\n`);
@@ -135,8 +140,6 @@ class ResourceCollection {
         // リソースをダウンロード
         await this.pullResources.exec({
           targetUrl: url,
-          pageForPuppeteer: page,
-          router: this.router,
           propsForCollection: this.props,
           salvage: this.salvage,
         });
@@ -145,8 +148,10 @@ class ResourceCollection {
         // 今回訪問したページをstackに追加
         this.addLoggedPages.push(`${new Date().toString()}:[visited] ${url}`);
       }
-    } catch (e: any) {
-      console.error(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.error(e.message);
+      }
     } finally {
       await browser.close();
       // 訪問済みのページを保存
@@ -160,6 +165,6 @@ class ResourceCollection {
   }
 }
 
-const collecter = new ResourceCollection(...dipendecies);
+const collecter = new ResourceCollection(new dependencies());
 
 collecter.main();
